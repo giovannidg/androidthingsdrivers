@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/DriversAndroidThings.iml" filepath="$PROJECT_DIR$/DriversAndroidThings.iml" />
+      <module fileurl="file://$PROJECT_DIR$/adc0832/adc0832.iml" filepath="$PROJECT_DIR$/adc0832/adc0832.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+    </modules>
+  </component>
+</project>
