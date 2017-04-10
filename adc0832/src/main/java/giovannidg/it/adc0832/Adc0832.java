@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package iotlab.open.it.adc0832;
+package giovannidg.it.adc0832;
 
 import android.util.Log;
 

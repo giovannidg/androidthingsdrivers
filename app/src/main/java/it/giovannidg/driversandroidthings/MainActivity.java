@@ -1,4 +1,4 @@
-package giovannidg.it.driversandroidthings;
+package it.giovannidg.driversandroidthings;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -17,7 +17,7 @@ import com.google.android.things.pio.PeripheralManagerService;
 import java.io.IOException;
 import java.util.List;
 
-import iotlab.open.it.adc0832.Adc0832;
+import giovannidg.it.adc0832.Adc0832;
 
 public class MainActivity extends Activity {
 
@@ -54,10 +54,10 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         if (hasUI()) {
-            setContentView(R.layout.activity_main);
-            valueTextView = (TextView) findViewById(R.id.value_text);
+            setContentView(giovannidg.it.driversandroidthings.R.layout.activity_main);
+            valueTextView = (TextView) findViewById(giovannidg.it.driversandroidthings.R.id.value_text);
             //ButtonTest
-            findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            findViewById(giovannidg.it.driversandroidthings.R.id.button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     readAnalogData();
