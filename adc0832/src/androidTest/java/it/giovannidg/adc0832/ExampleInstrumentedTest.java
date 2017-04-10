@@ -1,4 +1,4 @@
-package iotlab.open.it.adc0832;
+package it.giovannidg.adc0832;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -7,7 +7,8 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.*;
+import static junit.framework.Assert.assertEquals;
+
 
 /**
  * Instrumentation test, which will execute on an Android device.
@@ -21,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("iotlab.open.it.adc0832.test", appContext.getPackageName());
+        assertEquals("it.giovannidg.adc0832.test", appContext.getPackageName());
     }
 }

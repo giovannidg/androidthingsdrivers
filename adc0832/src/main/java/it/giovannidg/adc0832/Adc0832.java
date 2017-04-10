@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package giovannidg.it.adc0832;
+package it.giovannidg.adc0832;
 
 import android.util.Log;
 

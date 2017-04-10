@@ -17,7 +17,7 @@ import com.google.android.things.pio.PeripheralManagerService;
 import java.io.IOException;
 import java.util.List;
 
-import giovannidg.it.adc0832.Adc0832;
+import it.giovannidg.adc0832.Adc0832;
 
 public class MainActivity extends Activity {
 
@@ -27,9 +27,7 @@ public class MainActivity extends Activity {
     private static final String COMMAND_READ_ANALOG = "COMMAND_READ_ANALOG";
 
     private TextView valueTextView;
-
-    private Adc0832 adc0832;
-
+    private Adc0832 mAdc0832;
     private Handler mHandler;
 
     BroadcastReceiver commandsReceiver = new BroadcastReceiver() {
@@ -54,10 +52,10 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         if (hasUI()) {
-            setContentView(giovannidg.it.driversandroidthings.R.layout.activity_main);
-            valueTextView = (TextView) findViewById(giovannidg.it.driversandroidthings.R.id.value_text);
+            setContentView(R.layout.activity_main);
+            valueTextView = (TextView) findViewById(R.id.value_text);
             //ButtonTest
-            findViewById(giovannidg.it.driversandroidthings.R.id.button).setOnClickListener(new View.OnClickListener() {
+            findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     readAnalogData();
@@ -81,9 +79,9 @@ public class MainActivity extends Activity {
             Log.i(TAG, "List of available ports: " + portList);
         }
 
-        //set up adc0832
+        //set up mAdc0832
         try {
-            adc0832 = new Adc0832(Adc0832.DEFAULT_PI_PIN_CLK, Adc0832.DEFAULT_PI_PIN_D0,
+            mAdc0832 = new Adc0832(Adc0832.DEFAULT_PI_PIN_CLK, Adc0832.DEFAULT_PI_PIN_D0,
                     Adc0832.DEFAULT_PI_PIN_D1, Adc0832.DEFAULT_PI_PIN_CS);
         } catch (IOException e) {
             e.printStackTrace();
@@ -96,7 +94,7 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(commandsReceiver);
-        adc0832.close();
+        mAdc0832.close();
     }
 
     private void readAnalogData() {
@@ -112,8 +110,8 @@ public class MainActivity extends Activity {
     private void readValueAndLog() {
         for (int i = 0; i < 10; i++) {
             try {
-                final int a = adc0832.getADCChannelValue(Adc0832.CHANNEL_0);
-                final int b = adc0832.getADCChannelValue(Adc0832.CHANNEL_1);
+                final int a = mAdc0832.getADCChannelValue(Adc0832.CHANNEL_0);
+                final int b = mAdc0832.getADCChannelValue(Adc0832.CHANNEL_1);
                 Log.d(TAG, a + " - " + b);
                 mHandler.post(new Runnable() {
                     @Override

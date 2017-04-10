@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="giovannidg.it.adc0832">
+    package="it.giovannidg.adc0832">
 
     <application
         android:allowBackup="true"
