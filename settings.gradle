@@ -1,1 +1,2 @@
-include ':app', ':adc0832'
+include ':app'
+include ':adc0832'
