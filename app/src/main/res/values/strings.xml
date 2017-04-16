@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">DriversAndroidThings</string>
+    <string name="analog_value_placeholder">Analog value...</string>
+    <string name="read_value">Read value</string>
 </resources>
