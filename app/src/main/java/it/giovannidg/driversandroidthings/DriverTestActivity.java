@@ -21,9 +21,9 @@ import java.util.List;
 import it.giovannidg.adc0832.Adc0832;
 import it.giovannidg.sf0180.Sf0180;
 
-public class MainActivity extends Activity {
+public class DriverTestActivity extends Activity {
 
-    private static String TAG = MainActivity.class.getCanonicalName();
+    private static String TAG = DriverTestActivity.class.getCanonicalName();
     private static String ACTION = "it.giovannidg.driver.intent.TEST";
     private static String EXTRA_KEY = "COMMAND";
     private static final String COMMAND_READ_ANALOG = "COMMAND_READ_ANALOG";
