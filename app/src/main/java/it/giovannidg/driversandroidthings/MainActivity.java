@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.android.things.pio.PeripheralManagerService;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 
 import it.giovannidg.adc0832.Adc0832;
+import it.giovannidg.sf0180.Sf0180;
 
 public class MainActivity extends Activity {
 
@@ -25,10 +27,14 @@ public class MainActivity extends Activity {
     private static String ACTION = "it.giovannidg.driver.intent.TEST";
     private static String EXTRA_KEY = "COMMAND";
     private static final String COMMAND_READ_ANALOG = "COMMAND_READ_ANALOG";
+    private static String PWM_RPI_PORT = "PWM0";
 
     private TextView valueTextView;
     private Adc0832 mAdc0832;
+    private Sf0180 mMotor;
     private Handler mHandler;
+
+    private SeekBar motorPosition;
 
     BroadcastReceiver commandsReceiver = new BroadcastReceiver() {
         @Override
@@ -61,6 +67,24 @@ public class MainActivity extends Activity {
                     readAnalogData();
                 }
             });
+
+            motorPosition = (SeekBar) findViewById(R.id.motor_position);
+            motorPosition.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    mooveMotor();
+                }
+            });
         }
 
         // IntentFilter
@@ -73,11 +97,16 @@ public class MainActivity extends Activity {
         //list all GPIOs
         PeripheralManagerService manager = new PeripheralManagerService();
         List<String> portList = manager.getGpioList();
-        if (portList.isEmpty()) {
-            Log.i(TAG, "No GPIO port available on this device.");
-        } else {
+        List<String> pwmList = manager.getPwmList();
+        if (portList.isEmpty())
+            Log.e(TAG, "No GPIO port available on this device.");
+        else
             Log.i(TAG, "List of available ports: " + portList);
-        }
+
+        if (pwmList.isEmpty())
+            Log.i(TAG, "No PWM port available on this device.");
+        else
+            Log.i(TAG, "Available PWM ports: " + pwmList);
 
         //set up mAdc0832
         try {
@@ -87,7 +116,25 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
 
+        //set up Sf0180
+        try {
+            mMotor = new Sf0180(PWM_RPI_PORT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         mHandler = new Handler();
+    }
+
+    private void mooveMotor() {
+        int progress = motorPosition.getProgress();
+        //double degrees= (180*progress)/100;
+        double degrees = (double) progress;
+        try {
+            mMotor.goToDegreesPosition(degrees);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

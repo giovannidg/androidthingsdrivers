@@ -30,6 +30,31 @@
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Motor degrees"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="15dp"
+        android:textColor="@android:color/white"/>
+
+    <SeekBar
+        android:id="@+id/motor_position"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:max="180"
+        android:progress="90"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+         />
+
 
 </LinearLayout>

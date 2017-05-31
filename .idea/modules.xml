@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/DriversAndroidThings.iml" filepath="$PROJECT_DIR$/DriversAndroidThings.iml" />
       <module fileurl="file://$PROJECT_DIR$/adc0832/adc0832.iml" filepath="$PROJECT_DIR$/adc0832/adc0832.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sf0180/sf0180.iml" filepath="$PROJECT_DIR$/sf0180/sf0180.iml" />
     </modules>
   </component>
 </project>

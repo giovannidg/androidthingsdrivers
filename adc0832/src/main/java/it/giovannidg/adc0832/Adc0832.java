@@ -109,11 +109,11 @@ public class Adc0832 implements AutoCloseable {
         gpioCS.setActiveType(Gpio.ACTIVE_HIGH);
 
         gpioD0.setEdgeTriggerType(Gpio.EDGE_RISING);
-       new Thread(new Runnable() {
+        new Thread(new Runnable() {
             public void run() {
-                for (int i=0;i<10;i++) {
+                for (int i = 0; i < 10; i++) {
                     try {
-                        gpioD1.setValue(i%2==0);
+                        gpioD1.setValue(i % 2 == 0);
                         Thread.sleep(250);
                     } catch (IOException e) {
                         e.printStackTrace();
