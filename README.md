@@ -1,7 +1,7 @@
 # drivers_android_things
 Some driver for Android Things, import them with few lines of code:
 
-#On root build.gradle
+#In root build.gradle
 
 	allprojects {
 		repositories {
@@ -10,7 +10,7 @@ Some driver for Android Things, import them with few lines of code:
 		}
 	}
   
-#On app-level build.gradle
+#In app-level build.gradle
 
 	dependencies {
       compile 'com.github.giovannidg.androidthingsdrivers:sf0180:0.2.1'
