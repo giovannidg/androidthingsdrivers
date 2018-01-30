@@ -203,7 +203,13 @@ public class DriverTestActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(commandsReceiver);
-        mAdc0832.close();
+        try {
+            mAdc0832.close();
+            mMotor.close();
+            motorDriver.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void readAnalogData() {
