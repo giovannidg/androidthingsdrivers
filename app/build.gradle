@@ -24,4 +24,5 @@ dependencies {
     provided 'com.google.android.things:androidthings:0.2-devpreview'
     compile project(':adc0832')
     compile project(':sf0180')
+    compile project(path: ':pca9685')
 }

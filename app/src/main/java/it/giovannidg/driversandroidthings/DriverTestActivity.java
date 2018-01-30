@@ -5,10 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 import it.giovannidg.adc0832.Adc0832;
+import it.giovannidg.pca9685.Pca9685;
 import it.giovannidg.sf0180.Sf0180;
 
 public class DriverTestActivity extends Activity {
@@ -27,14 +30,21 @@ public class DriverTestActivity extends Activity {
     private static String ACTION = "it.giovannidg.driver.intent.TEST";
     private static String EXTRA_KEY = "COMMAND";
     private static final String COMMAND_READ_ANALOG = "COMMAND_READ_ANALOG";
-    private static String PWM_RPI_PORT = "PWM0";
+    private static String PWM_RPI_PORT = "PWM1";
+    private static int PCA9685_CHANNEL = 0;
+    private static final int UP_KEY = 19;
+    private static final int DOWN_KEY = 20;
+    private static final int LEFT_KEY = 21;
+    private static final int RIGHT_KEY = 22;
+    private static final int OK_KEY = 66;
 
     private TextView valueTextView;
     private Adc0832 mAdc0832;
     private Sf0180 mMotor;
+    private Pca9685 motorDriver = null;
     private Handler mHandler;
 
-    private SeekBar motorPosition;
+    private SeekBar motorPositionSeekBar;
 
     BroadcastReceiver commandsReceiver = new BroadcastReceiver() {
         @Override
@@ -57,6 +67,8 @@ public class DriverTestActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mHandler = new Handler();
+
         if (hasUI()) {
             setContentView(R.layout.activity_main);
             valueTextView = (TextView) findViewById(R.id.value_text);
@@ -68,8 +80,8 @@ public class DriverTestActivity extends Activity {
                 }
             });
 
-            motorPosition = (SeekBar) findViewById(R.id.motor_position);
-            motorPosition.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            motorPositionSeekBar = (SeekBar) findViewById(R.id.motor_position);
+            motorPositionSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
@@ -82,7 +94,7 @@ public class DriverTestActivity extends Activity {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    mooveMotor();
+                    updateMotorPosition();
                 }
             });
         }
@@ -94,10 +106,12 @@ public class DriverTestActivity extends Activity {
         filterSend.setPriority(999);
         registerReceiver(commandsReceiver, filterSend);
 
-        //list all GPIOs
-        PeripheralManagerService manager = new PeripheralManagerService();
-        List<String> portList = manager.getGpioList();
-        List<String> pwmList = manager.getPwmList();
+        //list available ports
+        PeripheralManagerService peripheralManager = new PeripheralManagerService();
+        List<String> portList = peripheralManager.getGpioList();
+        List<String> pwmList = peripheralManager.getPwmList();
+        List<String> i2CBusList = peripheralManager.getI2cBusList();
+
         if (portList.isEmpty())
             Log.e(TAG, "No GPIO port available on this device.");
         else
@@ -108,7 +122,12 @@ public class DriverTestActivity extends Activity {
         else
             Log.i(TAG, "Available PWM ports: " + pwmList);
 
-        //set up mAdc0832
+        if (i2CBusList.isEmpty())
+            Log.i(TAG, "No I2C port available on this device.");
+        else
+            Log.i(TAG, "Available I2C ports: " + i2CBusList);
+
+        //Set up Adc0832
         try {
             mAdc0832 = new Adc0832(Adc0832.DEFAULT_PI_PIN_CLK, Adc0832.DEFAULT_PI_PIN_D0,
                     Adc0832.DEFAULT_PI_PIN_D1, Adc0832.DEFAULT_PI_PIN_CS);
@@ -116,18 +135,61 @@ public class DriverTestActivity extends Activity {
             e.printStackTrace();
         }
 
-        //set up Sf0180
+        //Set up Sf0180
         try {
             mMotor = new Sf0180(PWM_RPI_PORT);
+//            new TestMotorTask().execute(mMotor);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        mHandler = new Handler();
+        //setup Pca9685
+        try {
+            motorDriver = new Pca9685(i2CBusList.get(0), new Pca9685.Pca9685Listener() {
+                @Override
+                public void onFrequencySet(boolean isSet) {
+                }
+
+                @Override
+                public void onInitEnd() {
+                    motorDriver.setPWMfreq(100, this);
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void mooveMotor() {
-        int progress = motorPosition.getProgress();
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.d("key", "KeyCode: " + keyCode + " event: " + event.getKeyCode());
+        switch (keyCode) {
+            case UP_KEY: {
+                motorDriver.setPwm(PCA9685_CHANNEL, 100, 600);
+            }
+            break;
+            case DOWN_KEY: {
+                motorDriver.setPwm(PCA9685_CHANNEL, 100, 1100);
+            }
+            break;
+            case LEFT_KEY: {
+                motorDriver.setPwm(PCA9685_CHANNEL, 100, 1500);
+            }
+            break;
+            case RIGHT_KEY: {
+                motorDriver.setPwm(PCA9685_CHANNEL, 100, 2100);
+            }
+            break;
+            case OK_KEY: {
+                motorDriver.setPwm(PCA9685_CHANNEL, 100, 2600);
+            }
+            break;
+        }
+        return true;
+    }
+
+    private void updateMotorPosition() {
+        int progress = motorPositionSeekBar.getProgress();
         //double degrees= (180*progress)/100;
         double degrees = (double) progress;
         try {
@@ -167,9 +229,7 @@ public class DriverTestActivity extends Activity {
                     }
                 });
                 Thread.sleep(400);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
         }
@@ -185,6 +245,30 @@ public class DriverTestActivity extends Activity {
                 return false;
         }
         return false;
+    }
+
+    public boolean runMotorTask = true;
+
+    private class TestMotorTask extends AsyncTask<Sf0180, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Sf0180... motors) {
+            try {
+                Sf0180 motor = motors[0];
+
+                do {
+                    motor.goToZeroPosition();
+                    Thread.sleep(1000);
+                    motor.goToNeutralPosition();
+                    Thread.sleep(1000);
+                    motor.goTo180Position();
+                    Thread.sleep(1000);
+                } while (runMotorTask);
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 
 }

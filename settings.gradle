@@ -1,2 +1,2 @@
-include ':app', ':sf0180'
+include ':app', ':sf0180', ':pca9685'
 include ':adc0832'
